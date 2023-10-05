@@ -1,0 +1,51 @@
+/* FormI.css */
+.form-container {
+  width: 50%; /* Sesuaikan lebar sesuai keinginan */
+  margin: 0 auto; /* Mengatur elemen ke tengah */
+}
+
+.custom-card {
+  height: 100%; /* Menetapkan tinggi 100% */
+  display: flex; /* Menggunakan display flex untuk mengatur tinggi sama rata */
+  flex-direction: column; /* Menata konten dalam kolom */
+}
+
+.custom-card .card {
+  flex-grow: 1; /* Membuat card mengisi ruang yang tersedia secara merata */
+}
+
+.custom-card .img{
+  height: 150px;
+}
+
+/* Animasi fade-in saat elemen masuk */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Animasi fade-out saat elemen keluar */
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+
+.app-container.dark {
+  background-color: black;
+  height: 100%;
+  bottom: 0%;
+}
+
+.app-container.light {
+  background-color: white;
+  color: black; /* Warna teks hitam dalam mode terang */
+}

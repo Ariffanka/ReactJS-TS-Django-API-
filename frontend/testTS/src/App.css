@@ -49,3 +49,15 @@
   background-color: white;
   color: black; /* Warna teks hitam dalam mode terang */
 }
+
+.add-container.bg-dark {
+  background-color: black;
+  height: 92vh;
+  bottom: 0%;
+}
+
+.add-container.bg-light {
+  background-color: white;
+  height: 92vh;
+  bottom: 0%;
+}

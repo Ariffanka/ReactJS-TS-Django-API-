@@ -64,10 +64,10 @@ const LoginPage: React.FC = () => {
   
       if (response.status === 200 && response.data.token) {
         // Token diterima, simpan di localStorage atau cookie
-        localStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', response.data.token);
 
         //add email
-        localStorage.setItem('userEmail', formData.email);
+        sessionStorage.setItem('userEmail', formData.email);
 
   
         // Alihkan pengguna ke halaman yang sesuai

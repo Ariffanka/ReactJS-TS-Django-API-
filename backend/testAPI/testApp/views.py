@@ -8,6 +8,9 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
 # from .validations import custom_validation
 
 # Create your views here.
@@ -60,9 +63,22 @@ class KontakViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes= (permissions.AllowAny,)
     queryset = Kontak.objects.all()
     serializer_class = KontakSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+
+    # @csrf_exempt
+    # def your_delete_view(self, request, id):
+    #     if request.method == 'DELETE':
+    #         try:
+    #             obj = Kontak.objects.get(id=id)
+    #             obj.delete()
+    #             return JsonResponse({'message': 'Delete successful'}, status=200)
+    #         except Kontak.DoesNotExist:
+    #             return JsonResponse({'error': 'Object not found'}, status=404)
+    #     else:
+    #         return JsonResponse({'error': 'Invalid method'}, status=400)
+
     
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -71,7 +87,6 @@ class UserViewSet(viewsets.ModelViewSet):
     # queryset = AppUser.objects.all().order_by('-created_at')
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):

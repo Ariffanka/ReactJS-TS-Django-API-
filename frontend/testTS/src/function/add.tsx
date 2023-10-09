@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Container, Image } from 'react-bootstrap';
-import {NaviBarElement} from '../showD';
+import {NaviBarElement, client} from '../showD';
+import axios from 'axios';
 
 const AddData = () => {
   const [formData, setFormData] = useState({
@@ -29,15 +30,23 @@ const AddData = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/kontaks/', {
-        method: 'POST',
-        headers: {
+      // const response = await fetch('http://127.0.0.1:8000/api/kontaks/', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
+      // const response= await client.post('/kontaks', formData);
+      const token= sessionStorage.getItem('token');
+      const response= await axios.post('http://127.0.0.1:8000/api/kontaks/', formData, {
+        headers:{
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+          Authorization: `Token ${token}`
+        }
+      })
 
-      if (response.ok) {
+      if (response.status === 201) {
         window.location.href='/';
       } else {
         window.location.href='/add';
@@ -58,22 +67,26 @@ const AddData = () => {
     setIsDarkMode(!isDarkMode);
   } 
 
+  const userEmail= localStorage.getItem('userEmail')
+  console.log("email add: ", userEmail)
+
   return (
     <div>
-      <NaviBarElement 
-    darkMode={isDarkMode ? 'bg-dark text-white' : 'bg-light text-dark'}
-    img={!isDarkMode ? 'https://wallpapers.com/images/hd/hunter-x-hunter-logo-mggpor0djod1etn4.jpg' : 'https://wallpapers.com/images/hd/hunter-x-hunter-logo-1r3u73itjw1ug0a0.jpg'}
-    onDarkMode={isDarkMode ? 
-      <Button onClick={toggleDarkMode} className='bg-transparent border-0'>
-      <Image  src='../src/assets/img/sun.png' />
-    </Button>
-    :
-    <Button onClick={toggleDarkMode} className='bg-transparent border-0'>
-        <Image  src='../src/assets/img/moon.png' />
-    </Button>
-    }
-
-   />
+     <NaviBarElement
+        darkMode={isDarkMode ? 'bg-dark text-white' : 'bg-light text-dark'}
+        img={!isDarkMode ? 'https://wallpapers.com/images/hd/hunter-x-hunter-logo-mggpor0djod1etn4.jpg' : 'https://wallpapers.com/images/hd/hunter-x-hunter-logo-1r3u73itjw1ug0a0.jpg'}
+        onDarkMode={isDarkMode ?
+          <Button onClick={toggleDarkMode} className='bg-transparent border-0'>
+            <Image src='../src/assets/img/sun.png' />
+          </Button>
+          :
+          <Button onClick={toggleDarkMode} className='bg-transparent border-0'>
+            <Image src='../src/assets/img/moon.png' />
+          </Button>
+        }
+        userEmail={String(userEmail)} 
+        dropDown={isDarkMode ? 'bg-dark text-white' : 'bg-light text-dark'}
+      />
       <Container>
         <h1 className='text-center mt-4'>Add Data</h1>
         <Form onSubmit={handleSubmit}>

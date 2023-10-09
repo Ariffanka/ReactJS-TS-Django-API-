@@ -41,8 +41,8 @@ interface FootProps {
 
 const NaviBarElement = (props: NavbarProps) => {
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Hapus token dari localStorage
-    localStorage.removeItem('userEmail'); // Hapus email dari localStorage jika diperlukan
+    sessionStorage.removeItem('token'); // Hapus token dari localStorage
+    sessionStorage.removeItem('userEmail'); // Hapus email dari localStorage jika diperlukan
     // Lakukan sesuatu untuk mengarahkan pengguna ke halaman login (misalnya dengan menggunakan React Router)
     window.location.href = '/login'; // Ganti dengan URL login yang sesuai
   };
@@ -86,6 +86,19 @@ const LogoutDropdown: React.FC<LogoutDropdownProps> = ({ email, onLogout, onDark
   );
 };
 
+const getToken = () => {
+  return sessionStorage.getItem('token');
+};
+
+// Konfigurasi Axios dengan header Authorization yang berisi token
+const client = axios.create({
+  baseURL: 'http://127.0.0.1:8000/api/', // Ganti URL Anda
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Token ${getToken()}`,
+  }
+});
+
 const ShowData = () => {
   const [data, setData] = useState<dataDiri[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -98,27 +111,15 @@ const ShowData = () => {
   );
   const [userEmail, setUserEmail] = useState<string>('');
 
-  const getToken = () => {
-    return localStorage.getItem('token');
-  };
-  
-  // Konfigurasi Axios dengan header Authorization yang berisi token
-  const client = axios.create({
-    baseURL: 'http://127.0.0.1:8000/api/', // Ganti URL Anda
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Token ${getToken()}` // Tambahkan token ke header
-    }
-  });
   // Mengambil data kontak dari server saat komponen dimuat
   useEffect(() => {
     fetchData();
   }, []);
 
   useEffect(() => {
-    // Lakukan sesuatu untuk mengambil email pengguna dari server atau localStorage.
-    // Misalnya, jika Anda menyimpan email di localStorage dengan nama 'userEmail':
-    const storedUserEmail = localStorage.getItem('userEmail');
+    // Lakukan sesuatu untuk mengambil email pengguna dari server atau session storage.
+    // Misalnya, jika Anda menyimpan email di session storage dengan nama 'userEmail':
+    const storedUserEmail = sessionStorage.getItem('userEmail');
     if (storedUserEmail) {
       setUserEmail(storedUserEmail);
     }
@@ -167,24 +168,36 @@ const ShowData = () => {
     }  
   }
   // Fungsi untuk menghapus data kontak berdasarkan ID
-  async function deleteData(id: number) {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/api/kontaks/${id}/`, {
-        method: 'DELETE'
-      });
+ // Fungsi untuk menghapus data kontak berdasarkan ID
+ async function deleteData(id: number) {
+  try {
+    const token = getToken();
+    await axios.delete(`http://127.0.0.1:8000/api/kontaks/${id}/`, {
+      headers: {
+        'Authorization': `Token ${token}`,
+      },
+    });
 
-      if (response.ok) {
-        // Item berhasil dihapus dari server, perbarui tampilan
-        const updatedData = data.filter((item) => item.id !== id);
-        setData(updatedData);
-      } else {
-        // Handle error jika diperlukan
-        console.error('Error deleting data:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error deleting data:', error);
+    // Item berhasil dihapus dari server, perbarui tampilan
+    const updatedData = data.filter((item) => item.id !== id);
+    setData(updatedData);
+  } catch (error) {
+    console.error('Error deleting data:', error);
+
+    if (error.response) {
+      // Tangani kesalahan yang berasal dari server (misalnya, response status bukan 2xx)
+      console.error('Server responded with:', error.response.status, error.response.statusText);
+    } else if (error.request) {
+      // Tangani kesalahan yang terjadi saat melakukan permintaan (misalnya, server mati)
+      console.error('Request error:', error.request);
+    } else {
+      // Kesalahan lainnya
+      console.error('Error:', error.message);
     }
   }
+}
+
+
 
   // Fungsi untuk memfilter data berdasarkan kata kunci pencarian
   function filterData() {
@@ -320,4 +333,4 @@ const CardS = (props: CardSProps) => {
   );
 }
 
-export { ShowData, NaviBarElement, Footer };
+export { ShowData, NaviBarElement, Footer, client };
